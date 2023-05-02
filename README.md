@@ -19,11 +19,7 @@ git clone https://github.com/Milan-960/EBI-IMPC-Mouse-Phenotyping.git
 
 ```
 yarn install
-```
-
-or
-
-```
+# or
 npm install
 ```
 
@@ -31,10 +27,6 @@ npm install
 
 ```
 yarn start
-```
-
-or
-
-```
+# or
 npm start
 ```
