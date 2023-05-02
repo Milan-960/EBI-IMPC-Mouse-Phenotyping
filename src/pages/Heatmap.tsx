@@ -6,6 +6,7 @@ import { HeatmapGene, TransformedData } from "../types/custom-types";
 import { fetchData } from "../api/fetchData";
 import { transformData } from "../utils/transformData";
 import FilterControls from "../components/FilterControls";
+import useDebouncedFilters from "../hooks/useDebouncedFilters";
 
 const Heatmap: React.FC = () => {
   const [heatmapData, setHeatmapData] = useState<TransformedData | null>(null);
@@ -82,6 +83,19 @@ const Heatmap: React.FC = () => {
     selectedPercentage,
   ]);
 
+  // Debounce the applyFilters function to avoid excessive updates
+  const debouncedApplyFilters = useDebouncedFilters(applyFilters, 1000);
+
+  useEffect(() => {
+    debouncedApplyFilters();
+  }, [
+    selectedGene,
+    selectedTerm,
+    selectedFilter,
+    selectedPercentage,
+    debouncedApplyFilters,
+  ]);
+
   useEffect(() => {
     fetchData().then((data) => {
       setRawData(data);
@@ -120,11 +134,12 @@ const Heatmap: React.FC = () => {
         setSelectedPercentage={setSelectedPercentage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        onFiltersChanged={applyFilters}
+        onFiltersChanged={debouncedApplyFilters}
         selectedGene={selectedGene}
         setSelectedGene={setSelectedGene}
         setSelectedFilter={setSelectedFilter}
       />
+
       <div className="heatmap-container">
         {paginatedData.length > 0 ? (
           <div style={{ height: "800px" }}>
@@ -194,6 +209,7 @@ const Heatmap: React.FC = () => {
           <p>Loading data...</p>
         )}
       </div>
+
       <HeatmapPagination
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

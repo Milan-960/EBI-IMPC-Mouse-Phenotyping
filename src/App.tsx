@@ -16,11 +16,10 @@ const App = () => {
   return (
     <div className="App">
       <nav className="navbar navbar-expand-lg navbar-light app-logo">
-        <a className="navbar-brand" href="/">
-          <Fade>
-            <img src={Logo} alt={Logo} />
-          </Fade>
-        </a>
+        <Fade>
+          <img src={Logo} alt={Logo} />
+        </Fade>
+
         <Button variant="outline-primary" onClick={handleShowHeatmap}>
           Show Heatmap
         </Button>
