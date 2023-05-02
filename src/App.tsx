@@ -2,7 +2,7 @@ import { Fade } from "react-awesome-reveal";
 import { Button } from "react-bootstrap";
 
 import LandingPage from "./pages/LandingPage";
-import HeatmapTest from "./pages/Heatmap";
+import Heatmap from "./pages/Heatmap";
 
 import Logo from "./assets/img/IMPC-logo.png";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -29,7 +29,7 @@ const App = () => {
       <LandingPage />
 
       <section>
-        <HeatmapTest />
+        <Heatmap />
       </section>
     </div>
   );
