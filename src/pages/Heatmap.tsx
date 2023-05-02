@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ResponsiveHeatMap } from "@nivo/heatmap";
 
 import HeatmapPagination from "../components/HeatmapPagination";
-import { TransformedData } from "../types/custom-types";
+import { HeatmapGene, TransformedData } from "../types/custom-types";
 import { fetchData } from "../api/fetchData";
 import { transformData } from "../utils/transformData";
 import FilterControls from "../components/FilterControls";
@@ -26,13 +26,12 @@ const Heatmap: React.FC = () => {
   console.log("selectedGene", selectedGene);
   const [selectedPercentage, setSelectedPercentage] = useState<number>(100);
   const genesPerPage = 25;
-  // Apply filters
 
   // Apply filters
   const applyFilters = useCallback(() => {
     if (!heatmapData) return;
 
-    let filteredData: TransformedData[] = [heatmapData];
+    let filteredData: HeatmapGene[] = heatmapData.genes;
 
     // When no filter is applied, set filteredHeatmapData to heatmapData
     if (
@@ -45,30 +44,21 @@ const Heatmap: React.FC = () => {
     }
 
     filteredData = filteredData
-      .filter((d: TransformedData) =>
+      .filter((gene) =>
         selectedGene.length === 0
           ? true
-          : selectedGene.some((gene) =>
-              d.genes.some((heatmapGene) =>
-                heatmapGene.id.toLowerCase().includes(gene.toLowerCase())
-              )
-            )
+          : selectedGene.includes(gene.marker_accession_id)
       )
-      .map((serie: TransformedData) => {
+      .map((gene) => {
         if (selectedTerm.length === 0) {
-          return serie;
+          return gene;
         }
         return {
-          ...serie,
-          genes: serie.genes.map((heatmapGene) => ({
-            ...heatmapGene,
-            data: heatmapGene.data.filter((d) => selectedTerm.includes(d.x)),
-          })),
+          ...gene,
+          data: gene.data.filter((d) => selectedTerm.includes(d.tlp_term_id)),
         };
       })
-      .filter((serie: TransformedData) =>
-        serie.genes.some((heatmapGene) => heatmapGene.data.length > 0)
-      );
+      .filter((gene) => gene.data.length > 0);
 
     // Filter based on the top percentage of genes with the highest count of phenotype associations
     if (selectedFilter === "percentage") {
@@ -76,21 +66,14 @@ const Heatmap: React.FC = () => {
         (selectedPercentage / 100) * (heatmapData?.genes.length ?? 0)
       );
       filteredData = filteredData
-        .sort((a, b) => {
-          const aPhenotypeCount = a.genes.reduce(
-            (total, current) => total + current.total_pTerm_count,
-            0
-          );
-          const bPhenotypeCount = b.genes.reduce(
-            (total, current) => total + current.total_pTerm_count,
-            0
-          );
-          return bPhenotypeCount - aPhenotypeCount;
-        })
+        .sort((a, b) => b.total_pTerm_count - a.total_pTerm_count)
         .slice(0, topN);
     }
 
-    setFilteredHeatmapData(filteredData[0]);
+    setFilteredHeatmapData({
+      ...heatmapData,
+      genes: filteredData,
+    });
   }, [
     heatmapData,
     selectedGene,
@@ -185,7 +168,7 @@ const Heatmap: React.FC = () => {
                 steps: 4,
                 colors: ["#88dbd9", "#29bcd0", "#009fca", "#0076b6"],
               }}
-              emptyColor="#c9bebe6e"
+              emptyColor="#0000"
               legends={[
                 {
                   anchor: "bottom",
