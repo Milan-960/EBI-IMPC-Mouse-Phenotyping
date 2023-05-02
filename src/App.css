@@ -1,3 +1,55 @@
 .App {
   text-align: center;
 }
+
+.App h2 {
+  margin: 10px;
+}
+
+/* Landing page */
+
+.container {
+  margin-top: 20px;
+}
+
+.container h3 {
+  color: #000000;
+}
+
+.container p,
+li {
+  text-align: justify;
+  color: #8e8e8e;
+}
+
+.container label {
+  color: #655e5e;
+}
+
+.section-intro p a {
+  color: #ed7b25;
+}
+
+.container h4 {
+  margin-bottom: 50px;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.firstimage,
+.secondimage,
+.thirdimage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 400px;
+  object-fit: cover;
+}
+
+/* overwrite style */
+.row {
+  align-items: center;
+}
