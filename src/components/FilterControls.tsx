@@ -21,11 +21,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     selectedOptions: any,
     _actionMeta: ActionMeta<any>
   ) => {
-    const genes = selectedOptions.map(
-      (option: { value: string }) => option.value
-    );
+    const genes = selectedOptions
+      ? selectedOptions.map((option: { value: string }) => option.value)
+      : [];
     setSelectedGene(genes);
-    setSelectedFilter("gene");
+    setSelectedFilter(genes.length > 0 ? "gene" : undefined);
     onFiltersChanged();
   };
 
@@ -34,11 +34,13 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     selectedOptions: any,
     _actionMeta: ActionMeta<any>
   ) => {
-    const topTerms = selectedOptions.map(
-      (option: { value: string; label: string }) => option.value
-    );
+    const topTerms = selectedOptions
+      ? selectedOptions.map(
+          (option: { value: string; label: string }) => option.value
+        )
+      : [];
     setSelectedTerm(topTerms);
-    setSelectedFilter("term");
+    setSelectedFilter(topTerms.length > 0 ? "term" : undefined);
     onFiltersChanged();
   };
 
@@ -79,11 +81,21 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     [data]
   );
 
+  // To check if the filter is active show lable!
+  const renderActiveLabel = (filterType: string) => {
+    if (selectedFilter === filterType) {
+      return <span className="ms-2 badge active-filter-label">Active</span>;
+    }
+    return null;
+  };
+
   return (
     <div className="filter-controls container">
       <div className="row">
         <div className="col-md-6 col-sm-12 mb-2">
-          <label htmlFor="gene-filter-input">Filter by gene list:</label>
+          <label htmlFor="gene-filter-input">
+            Filter by gene list: {renderActiveLabel("gene")}
+          </label>
           <Select
             id="gene-filter-input"
             className="m-2 select-filter"
@@ -102,7 +114,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         </div>
         <div className="col-md-6 col-sm-12 mb-2">
           <label htmlFor="term-filter-select">
-            Filter by top-level phenotype term:
+            Filter by top-level phenotype term: {renderActiveLabel("term")}
           </label>
           <Select
             id="term-filter-select"
@@ -123,7 +135,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         <div className="col-md-6 col-sm-12 mb-2">
           <label htmlFor="percentage-filter-input">
             Filter top {selectedPercentage} % of the genes that have the highest
-            phenotype count
+            phenotype count {renderActiveLabel("percentage")}
           </label>
           <div className="d-flex align-items-center">
             <input

@@ -8,6 +8,7 @@ import Heatmap from "./pages/Heatmap";
 import Logo from "./assets/img/IMPC-logo.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import Footer from "./components/Footer";
 
 const App = () => {
   // Add a new ref for the heatmap section
@@ -21,25 +22,29 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-      <div className="container">
-        <nav className="app-logo">
-          <Fade>
-            <img src={Logo} alt={Logo} />
-          </Fade>
+    <>
+      <div className="App">
+        <div className="container">
+          <nav className="app-logo">
+            <Fade>
+              <img src={Logo} alt={Logo} />
+            </Fade>
 
-          <Button variant="outline-primary" onClick={handleShowHeatmap}>
-            Show Heatmap
-          </Button>
-        </nav>
+            <Button variant="outline-primary" onClick={handleShowHeatmap}>
+              Show Heatmap
+            </Button>
+          </nav>
+        </div>
+
+        <LandingPage />
+
+        <section ref={heatmapRef}>
+          <Heatmap />
+        </section>
+
+        <Footer />
       </div>
-
-      <LandingPage />
-
-      <section ref={heatmapRef}>
-        <Heatmap />
-      </section>
-    </div>
+    </>
   );
 };
 

@@ -20,43 +20,39 @@ const HeatmapPagination: React.FC<HeatmapPaginationProps> = ({
   return (
     <>
       {totalPages > 1 && (
-        <div className="text-center">
-          <div className="pagination-container">
-            <Pagination>
-              <Pagination.First onClick={() => handlePageChange(0)} />
-              <Pagination.Prev
-                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
-              />
-              {startPageIndex > 0 && <Pagination.Ellipsis />}
-              {Array.from({ length: visiblePages }, (_, index) => {
-                const pageIndex = startPageIndex + index;
-                if (pageIndex < totalPages) {
-                  return (
-                    <Pagination.Item
-                      key={index}
-                      active={pageIndex === currentPage}
-                      onClick={() => handlePageChange(pageIndex)}
-                    >
-                      {pageIndex + 1}
-                    </Pagination.Item>
-                  );
-                } else {
-                  return null;
-                }
-              })}
-              {startPageIndex + visiblePages < totalPages && (
-                <Pagination.Ellipsis />
-              )}
-              <Pagination.Next
-                onClick={() =>
-                  handlePageChange(Math.min(totalPages - 1, currentPage + 1))
-                }
-              />
-              <Pagination.Last
-                onClick={() => handlePageChange(totalPages - 1)}
-              />
-            </Pagination>
-          </div>
+        <div>
+          <Pagination>
+            <Pagination.First onClick={() => handlePageChange(0)} />
+            <Pagination.Prev
+              onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+            />
+            {startPageIndex > 0 && <Pagination.Ellipsis />}
+            {Array.from({ length: visiblePages }, (_, index) => {
+              const pageIndex = startPageIndex + index;
+              if (pageIndex < totalPages) {
+                return (
+                  <Pagination.Item
+                    key={index}
+                    active={pageIndex === currentPage}
+                    onClick={() => handlePageChange(pageIndex)}
+                  >
+                    {pageIndex + 1}
+                  </Pagination.Item>
+                );
+              } else {
+                return null;
+              }
+            })}
+            {startPageIndex + visiblePages < totalPages && (
+              <Pagination.Ellipsis />
+            )}
+            <Pagination.Next
+              onClick={() =>
+                handlePageChange(Math.min(totalPages - 1, currentPage + 1))
+              }
+            />
+            <Pagination.Last onClick={() => handlePageChange(totalPages - 1)} />
+          </Pagination>
         </div>
       )}
     </>

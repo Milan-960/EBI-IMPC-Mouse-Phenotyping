@@ -66,6 +66,10 @@ li {
   align-items: center;
 }
 
+.pagination {
+  margin: 0;
+}
+
 /* heatmap */
 
 .header {
@@ -95,9 +99,8 @@ li {
 .heatmap-wrapper {
   position: relative;
   width: 100%;
-  overflow: hidden;
   height: 100%;
-  min-height: 900px !important;
+  min-height: 750px !important;
 }
 
 .heatmap-wrapper > * {
@@ -112,14 +115,45 @@ li {
 
 .pagination-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
+.pagination-container > div {
+  padding: 10px;
+}
+
+.genesPerPage > label {
+  padding: 5px;
+}
+
 /* filters */
 
 .select-filter {
   width: 100%;
+}
+
+.active-filter-label {
+  color: #ffffff;
+  background-color: #f0893ade;
+}
+
+/* tooltips */
+
+.tooltip-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  z-index: 999;
+}
+
+/* footer page  */
+
+.footer-main {
+  background-color: #f3f3f3;
+  padding: 1rem;
+  border-radius: 5px;
 }

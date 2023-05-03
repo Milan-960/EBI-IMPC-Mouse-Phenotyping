@@ -18,22 +18,24 @@ export type Phenotype = {
 };
 
 export type HeatmapGene = {
-  id: string;
+  id: string; // marker_symbol
   marker_accession_id: string;
   total_pTerm_count: number;
   data: HeatmapGeneData[];
 };
 
-export type HeatmapGeneData = {
-  x: string; // tlpTerm_name
-  y: number | null; // phenotype_count
-
-  // Extra Data
+export interface HeatmapGeneData {
+  x: string;
+  y: number | null;
+  xKey: string;
+  yKey: string;
   index: number;
   tlp_term_id: string;
   p_terms?: Phenotype[];
   procedures?: string[];
-};
+  gene?: HeatmapGene; // Add this property
+  tlp_term?: TopLevelPhenotype & { index: number }; // Add this property
+}
 
 export type TransformedData = {
   genes: HeatmapGene[];
@@ -65,3 +67,10 @@ export type HeatmapPaginationProps = {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   totalPages: number;
 };
+
+// MetadataModal types
+export interface MetadataModalProps {
+  show: boolean;
+  onHide: () => void;
+  data: HeatmapGeneData | null;
+}
