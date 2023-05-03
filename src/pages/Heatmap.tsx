@@ -21,7 +21,7 @@ const Heatmap: React.FC = () => {
   const [selectedTerm, setSelectedTerm] = useState<string[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<"gene" | "term" | "percentage">();
   const [selectedGene, setSelectedGene] = useState<string[]>([]);
-  const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
+  const [selectedPercentage, setSelectedPercentage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [genesPerPage, setGenesPerPage] = useState(20);
   const [selectedCellData, setSelectedCellData] = useState<HeatmapGeneData | null>(null);
@@ -57,12 +57,14 @@ const Heatmap: React.FC = () => {
 
     // Filter based on the top percentage of genes with the highest count of phenotype associations
     if (selectedFilter === "percentage") {
-      const topN = Math.ceil(
-        (selectedPercentage / 100) * (heatmapData?.genes.length ?? 0)
-      );
-      filteredData = filteredData
-        .sort((a, b) => b.total_pTerm_count - a.total_pTerm_count)
-        .slice(0, topN);
+      if (selectedPercentage > 0) {
+        const topN = Math.ceil(
+          (selectedPercentage / 100) * (heatmapData?.genes.length ?? 0)
+        );
+        filteredData = filteredData
+          .sort((a, b) => b.total_pTerm_count - a.total_pTerm_count)
+          .slice(0, topN);
+      }
     }
 
     setDisplayedHeatmapData({
@@ -128,10 +130,10 @@ const Heatmap: React.FC = () => {
     <div className="container">
       <div className="header">
         <h1>IMPC Gene-Phenotype Associations Heatmap</h1>
-        <p>
+        <span>
           Compare the knockout effect of a list of genes among different
           phenotyping systems.
-        </p>
+        </span>
       </div>
 
       <FilterControls
