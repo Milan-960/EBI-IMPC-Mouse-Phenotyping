@@ -4,12 +4,12 @@
 
 ### LandingPage
 
-<img align="right" src="./SS/Home.png" width="100%"/>
+<img align="right" src="./SS/HomeL.png" width="100%"/>
 &nbsp;
 
 ### HeatMap
 
-<img align="right" src="./SS/Heatmap.png" width="100%"/>
+<img align="right" src="./SS/HeatMap.png" width="100%"/>
 &nbsp;
 
 ## Folder Structure!
@@ -94,7 +94,7 @@ npm start
 
 ---
 
-> ## This app allows users to compare the knockout effect of a list of genes among different phenotyping systems by visualizing the data using a heatmap. The app has the following main components!
+> ## **This app allows users to compare the knockout effect of a list of genes among different phenotyping systems by visualizing the data using a heatmap. The app has the following main components!**
 
 ## 1. Heatmap
 
