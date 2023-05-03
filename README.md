@@ -1,4 +1,4 @@
-> # IMPC Gene-Phenotype Associations Heatmap
+# **IMPC Gene-Phenotype Associations Heatmap**
 
 - [Live-Demo](https://impc-mouse-phenotyping.vercel.app/)
 
@@ -64,7 +64,7 @@
  ┗ 📜yarn.lock
 ```
 
-> # **How to start this project!**
+# **How to start this project!**
 
 ## Note This project was created using node version **v18.4.0**
 
@@ -94,7 +94,7 @@ npm start
 
 ---
 
-> ## **This app allows users to compare the knockout effect of a list of genes among different phenotyping systems by visualizing the data using a heatmap. The app has the following main components!**
+## **This app allows users to compare the knockout effect of a list of genes among different phenotyping systems by visualizing the data using a heatmap. The app has the following main components!**
 
 ## 1. Heatmap
 
@@ -118,7 +118,7 @@ npm start
 
 ---
 
-> ## A brief description of conceptual and technical decision which I have made!
+## **A brief description of conceptual and technical decision which I have made!**
 
 ## 1. Conceptual decisions:
 
@@ -146,7 +146,7 @@ By making these conceptual and technical decisions, the app effectively addresse
 
 ---
 
-> ## PS: Here are some key findings ideas we can add!
+## **PS: Here are some key findings ideas we can add!**
 
 ## 1. Search functionality:
 
@@ -176,7 +176,7 @@ By implementing some or all of these enhancements, the app can provide an even m
 
 ---
 
-> ## Here are the links to the branches!
+## **Here are the links to the branches!**
 
 [Master](https://github.com/Milan-960/EBI-IMPC-Mouse-Phenotyping)
 
