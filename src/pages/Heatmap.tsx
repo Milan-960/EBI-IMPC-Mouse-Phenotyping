@@ -10,18 +10,14 @@ import useDebouncedFilters from "../hooks/useDebouncedFilters";
 
 const Heatmap: React.FC = () => {
   const [heatmapData, setHeatmapData] = useState<TransformedData | null>(null);
-  const [displayedHeatmapData, setDisplayedHeatmapData] =
-    useState<TransformedData | null>(null);
-  console.log("displayedHeatmapData", displayedHeatmapData);
+  const [displayedHeatmapData, setDisplayedHeatmapData] = useState<TransformedData | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTerm, setSelectedTerm] = useState<string[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<
-    "gene" | "term" | "percentage"
-  >();
+  const [selectedFilter, setSelectedFilter] = useState<"gene" | "term" | "percentage">();
   const [selectedGene, setSelectedGene] = useState<string[]>([]);
   const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
   const [isLoading, setIsLoading] = useState(true);
-  const genesPerPage = 30;
+  const [genesPerPage, setGenesPerPage] = useState(20);
 
   // Apply filters
   const applyFilters = useCallback(() => {
@@ -74,6 +70,13 @@ const Heatmap: React.FC = () => {
     selectedPercentage,
   ]);
 
+  // This is to select genesPerPage per page
+  const handleGenesPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setGenesPerPage(Number(e.target.value));
+  };
+
   // Debounce the applyFilters function to avoid excessive updates
   const debouncedApplyFilters = useDebouncedFilters(applyFilters, 1000);
 
@@ -105,7 +108,7 @@ const Heatmap: React.FC = () => {
       currentPage * genesPerPage,
       currentPage * genesPerPage + genesPerPage
     );
-  }, [currentPage, displayedHeatmapData]);
+  }, [currentPage, displayedHeatmapData, genesPerPage]);
 
   return (
     <div className="container">
@@ -204,15 +207,32 @@ const Heatmap: React.FC = () => {
             />
           </div>
         ) : (
-          <p>No data available!!</p>
+          <p className="text-center"> No data available!!</p>
         )}
       </div>
 
-      <HeatmapPagination
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPages={totalPages}
-      />
+      <div className="pagination-container">
+        <div className="me-3 genesPerPage">
+          <label htmlFor="genesPerPage"> Showing </label>
+          <select
+            name="genesPerPage"
+            id="genesPerPage"
+            value={genesPerPage}
+            onChange={handleGenesPerPageChange}
+          >
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+          </select>
+          <label htmlFor="genesPerPage"> genes per page. </label>
+        </div>
+
+        <HeatmapPagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+        />
+      </div>
     </div>
   );
 };

@@ -66,6 +66,10 @@ li {
   align-items: center;
 }
 
+.pagination {
+  margin: 0;
+}
+
 /* heatmap */
 
 .header {
@@ -112,10 +116,19 @@ li {
 
 .pagination-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.pagination-container > div {
+  padding: 10px;
+}
+
+.genesPerPage > label {
+  padding: 5px;
 }
 
 /* filters */
