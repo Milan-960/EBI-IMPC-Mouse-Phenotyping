@@ -112,6 +112,10 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         />
       </div>
       <div className="col-md-4">
+        <label htmlFor="percentage-filter-input">
+          Filter top {selectedPercentage} % of the genes that have the highest
+          phenotype count
+        </label>
         <div className="d-flex align-items-center">
           <input
             type="range"
