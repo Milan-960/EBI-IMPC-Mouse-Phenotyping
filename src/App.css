@@ -99,9 +99,8 @@ li {
 .heatmap-wrapper {
   position: relative;
   width: 100%;
-  overflow: hidden;
   height: 100%;
-  min-height: 900px !important;
+  min-height: 750px !important;
 }
 
 .heatmap-wrapper > * {
@@ -135,4 +134,13 @@ li {
 
 .select-filter {
   width: 100%;
+}
+
+/* tooltips */
+
+.tooltip-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  z-index: 999;
 }

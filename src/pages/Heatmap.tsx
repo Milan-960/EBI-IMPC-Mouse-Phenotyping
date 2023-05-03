@@ -1,12 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ResponsiveHeatMapCanvas } from "@nivo/heatmap";
+import { ResponsiveHeatMapCanvas, ComputedCell } from "@nivo/heatmap";
 
 import HeatmapPagination from "../components/HeatmapPagination";
-import { HeatmapGene, TransformedData } from "../types/custom-types";
+import {
+  HeatmapGene,
+  HeatmapGeneData,
+  TransformedData,
+} from "../types/custom-types";
 import { fetchData } from "../api/fetchData";
 import { transformData } from "../utils/transformData";
 import FilterControls from "../components/FilterControls";
 import useDebouncedFilters from "../hooks/useDebouncedFilters";
+import MetadataModal from "../components/MetadataModal";
+import HeatmapTooltip from "../components/HeatmapTooltip";
 
 const Heatmap: React.FC = () => {
   const [heatmapData, setHeatmapData] = useState<TransformedData | null>(null);
@@ -18,6 +24,7 @@ const Heatmap: React.FC = () => {
   const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
   const [isLoading, setIsLoading] = useState(true);
   const [genesPerPage, setGenesPerPage] = useState(20);
+  const [selectedCellData, setSelectedCellData] = useState<HeatmapGeneData | null>(null);
 
   // Apply filters
   const applyFilters = useCallback(() => {
@@ -62,12 +69,19 @@ const Heatmap: React.FC = () => {
       ...heatmapData,
       genes: filteredData,
     });
+
+    // Redirect to the first page if applying the filters results in less data than the current page index can display
+    if (currentPage * genesPerPage >= filteredData.length) {
+      setCurrentPage(0);
+    }
   }, [
     heatmapData,
     selectedGene,
     selectedTerm,
     selectedFilter,
     selectedPercentage,
+    currentPage,
+    genesPerPage,
   ]);
 
   // This is to select genesPerPage per page
@@ -135,6 +149,12 @@ const Heatmap: React.FC = () => {
         selectedFilter={selectedFilter}
       />
 
+      <MetadataModal
+        show={selectedCellData !== null}
+        onHide={() => setSelectedCellData(null)}
+        data={selectedCellData ? selectedCellData : null}
+      />
+
       <div className="heatmap-container">
         {isLoading && (
           <div className="loading-overlay">
@@ -148,6 +168,24 @@ const Heatmap: React.FC = () => {
               data={paginatedData}
               margin={{ top: 120, right: 90, bottom: 60, left: 90 }}
               valueFormat=">-.2s"
+              onClick={(cell: ComputedCell<HeatmapGeneData>) => {
+                const gene = heatmapData?.genes.find(
+                  (g) => g.marker_accession_id === cell.data.yKey
+                );
+                const tlp_term = heatmapData?.tlp_terms.find(
+                  (t) => t.top_level_mp_term_id === cell.data.xKey
+                );
+                setSelectedCellData({
+                  ...cell.data,
+                  gene,
+                  tlp_term,
+                });
+              }}
+              tooltip={({ cell }) => {
+                const data = cell.data as HeatmapGeneData;
+                const id = cell.serieId as string;
+                return <HeatmapTooltip data={data} id={id} />;
+              }}
               xOuterPadding={0.1}
               xInnerPadding={0.1}
               yOuterPadding={0.1}

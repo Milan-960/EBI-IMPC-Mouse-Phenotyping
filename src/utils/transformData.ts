@@ -18,6 +18,7 @@ const findTlpIndex = (
     ({ top_level_mp_term_id: id }) => id === top_level_mp_term_id
   );
 
+// Transforms the given phenotyping data into a structure suitable for heatmap display
 export const transformData = (data: PhenotypingData[]): TransformedData => {
   const genes: HeatmapGene[] = [];
   const tlp_terms: TopLevelPhenotype[] = [];
@@ -50,7 +51,8 @@ export const transformData = (data: PhenotypingData[]): TransformedData => {
     genes[gene_index].data[tlpIndex] = {
       x: phen.top_level_phenotype_term.top_level_mp_term_name,
       y: phen.phenotype_count,
-
+      xKey: phen.top_level_phenotype_term.top_level_mp_term_id,
+      yKey: phen.marker_accession_id,
       index: gene_index,
       tlp_term_id: phen.top_level_phenotype_term.top_level_mp_term_id,
       p_terms: phen.phenotype_terms,
@@ -59,25 +61,27 @@ export const transformData = (data: PhenotypingData[]): TransformedData => {
   }
 
   const ranked_genes: number[] = [];
-  // Iterate through each gene and fill in missing data with null values
-  genes.forEach((gene, i) => {
+
+  // Fill in missing data with null values and sort gene data by top level phenotype term name
+  for (let i = 0; i < genes.length; i++) {
     for (let j = 0; j < tlp_terms.length; j++) {
-      if (gene.data[j] === undefined) {
-        gene.data[j] = {
+      if (genes[i].data[j] === undefined) {
+        genes[i].data[j] = {
           x: tlp_terms[j].top_level_mp_term_name,
           y: null,
-
-          index: i,
+          xKey: "top_level_mp_term_name",
+          yKey: "p_value",
+          index: j,
           tlp_term_id: tlp_terms[j].top_level_mp_term_id,
         };
       } else {
-        gene.total_pTerm_count += gene.data[j].y ?? 0;
+        genes[i].total_pTerm_count += genes[i].data[j].y ?? 0;
       }
     }
     // Sort gene data by top level phenotype term name
-    gene.data.sort(({ x }, { x: y }) => x.localeCompare(y, "en-US"));
+    genes[i].data.sort(({ x }, { x: y }) => x.localeCompare(y, "en-US"));
     ranked_genes[i] = i;
-  });
+  }
 
   // Sort genes alphabetically by gene ID
   genes.sort(({ id: a }, { id: b }) => a.localeCompare(b, "en-US"));
@@ -98,6 +102,7 @@ export const transformData = (data: PhenotypingData[]): TransformedData => {
     value.index = index;
   });
 
+  // Return the transformed data object containing genes, tlp_terms, and ranked_genes
   return {
     genes,
     tlp_terms: tlp_terms as TransformedData["tlp_terms"],

@@ -21,11 +21,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     selectedOptions: any,
     _actionMeta: ActionMeta<any>
   ) => {
-    const genes = selectedOptions.map(
-      (option: { value: string }) => option.value
-    );
+    const genes = selectedOptions
+      ? selectedOptions.map((option: { value: string }) => option.value)
+      : [];
     setSelectedGene(genes);
-    setSelectedFilter("gene");
+    setSelectedFilter(genes.length > 0 ? "gene" : undefined);
     onFiltersChanged();
   };
 
@@ -34,11 +34,13 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     selectedOptions: any,
     _actionMeta: ActionMeta<any>
   ) => {
-    const topTerms = selectedOptions.map(
-      (option: { value: string; label: string }) => option.value
-    );
+    const topTerms = selectedOptions
+      ? selectedOptions.map(
+          (option: { value: string; label: string }) => option.value
+        )
+      : [];
     setSelectedTerm(topTerms);
-    setSelectedFilter("term");
+    setSelectedFilter(topTerms.length > 0 ? "term" : undefined);
     onFiltersChanged();
   };
 
