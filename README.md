@@ -9,7 +9,7 @@
 
 ### HeatMap
 
-<img align="right" src="./SS/HeatMap.png" width="100%"/>
+<img align="right" src="./SS/HeatMapP.png" width="100%"/>
 &nbsp;
 
 ## Folder Structure!
@@ -64,7 +64,7 @@
  ┗ 📜yarn.lock
 ```
 
-> # How to start this project!
+> # **How to start this project!**
 
 ## Note This project was created using node version **v18.4.0**
 
