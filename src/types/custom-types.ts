@@ -43,7 +43,7 @@ export type TransformedData = {
   ranked_genes: number[];
 };
 
-// FilterControlsProps interface defines the props for the FilterControls component
+// FilterControlsProps interface defines the props for the FilterControls component.
 export interface FilterControlsProps {
   selectedGene: string[];
   setSelectedGene: (genes: string[]) => void;
@@ -51,9 +51,17 @@ export interface FilterControlsProps {
   setSelectedTerm: (terms: string[]) => void;
   selectedPercentage: number;
   setSelectedPercentage: (percentage: number) => void;
-  setSelectedFilter: (filter: "gene" | "term" | "percentage") => void;
+  selectedFilter: "gene" | "term" | "percentage" | undefined;
+  setSelectedFilter: React.Dispatch<React.SetStateAction<"gene" | "term" | "percentage" | undefined>>;
   data: TransformedData | null;
   currentPage: number;
   setCurrentPage: (page: number) => void;
   onFiltersChanged: () => void;
 }
+
+// Pagination types
+export type HeatmapPaginationProps = {
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  totalPages: number;
+};

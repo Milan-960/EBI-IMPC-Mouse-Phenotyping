@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import Select, { ActionMeta } from "react-select";
 
 import { FilterControlsProps } from "../types/custom-types";
@@ -10,12 +10,12 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   setSelectedTerm,
   selectedPercentage,
   setSelectedPercentage,
+  selectedFilter,
   setSelectedFilter,
   data,
   onFiltersChanged,
 }) => {
   // Handle gene filter input changes
-
   const handleFilterByGene = (
     selectedOptions: any,
     _actionMeta: ActionMeta<any>
@@ -25,6 +25,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     );
     setSelectedGene(genes);
     setSelectedFilter("gene");
+    onFiltersChanged();
   };
 
   // Handle term filter select changes using ReactSelect
@@ -37,6 +38,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     );
     setSelectedTerm(topTerms);
     setSelectedFilter("term");
+    onFiltersChanged();
   };
 
   // Handle percentage filter input changes
@@ -46,6 +48,15 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     const filterValue = parseInt(event.target.value);
     setSelectedPercentage(filterValue);
     setSelectedFilter("percentage");
+    onFiltersChanged();
+  };
+
+  const resetFilters = () => {
+    setSelectedGene([]);
+    setSelectedTerm([]);
+    setSelectedPercentage(10);
+    setSelectedFilter(undefined);
+    onFiltersChanged();
   };
 
   const termOptions = useMemo(
@@ -66,15 +77,9 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     [data]
   );
 
-  // Trigger onFiltersChanged when any filter value is changed
-  useEffect(() => {
-    onFiltersChanged();
-  }, [selectedGene, selectedTerm, selectedPercentage, onFiltersChanged]);
-
   return (
     <div className="filter-controls row">
       <div className="col-md-4">
-        <label htmlFor="gene-filter-input">Filter by gene list:</label>
         <Select
           id="gene-filter-input"
           className="m-2"
@@ -86,13 +91,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           }))}
           onChange={handleFilterByGene}
           isMulti
+          isDisabled={selectedFilter && selectedFilter !== "gene"}
           placeholder="Choose a list of genes..."
         />
       </div>
       <div className="col-md-4">
-        <label htmlFor="term-filter-select">
-          Filter by top-level phenotype term:
-        </label>
         <Select
           id="term-filter-select"
           className="m-2"
@@ -104,14 +107,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           }))}
           isMulti
           onChange={handleFilterByTerm}
+          isDisabled={selectedFilter && selectedFilter !== "term"}
           placeholder="Choose top-level phenotype..."
         />
       </div>
       <div className="col-md-4">
-        <label htmlFor="percentage-filter-input">
-          Filter top {selectedPercentage} % of the genes that have the highest
-          phenotype count
-        </label>
         <div className="d-flex align-items-center">
           <input
             type="range"
@@ -122,8 +122,18 @@ const FilterControls: React.FC<FilterControlsProps> = ({
             step="1"
             value={selectedPercentage}
             onChange={handleFilterByPercentage}
+            disabled={selectedFilter && selectedFilter !== "percentage"}
           />
         </div>
+      </div>
+      <div className="col-md-4">
+        <button
+          type="button"
+          className="btn btn-secondary ms-2"
+          onClick={resetFilters}
+        >
+          Reset Filters
+        </button>
       </div>
     </div>
   );
