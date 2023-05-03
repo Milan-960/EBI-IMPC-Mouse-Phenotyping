@@ -149,3 +149,11 @@ li {
   justify-content: space-between;
   z-index: 999;
 }
+
+/* footer page  */
+
+.footer-main {
+  background-color: #f3f3f3;
+  padding: 1rem;
+  border-radius: 5px;
+}
