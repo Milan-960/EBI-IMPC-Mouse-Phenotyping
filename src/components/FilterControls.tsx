@@ -78,66 +78,70 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   );
 
   return (
-    <div className="filter-controls row">
-      <div className="col-md-4">
-        <Select
-          id="gene-filter-input"
-          className="m-2"
-          options={geneOptions}
-          value={selectedGene.map((gene) => ({
-            value: gene,
-            label:
-              geneOptions?.find((option) => option.value === gene)?.label || "",
-          }))}
-          onChange={handleFilterByGene}
-          isMulti
-          isDisabled={selectedFilter && selectedFilter !== "gene"}
-          placeholder="Choose a list of genes..."
-        />
-      </div>
-      <div className="col-md-4">
-        <Select
-          id="term-filter-select"
-          className="m-2"
-          options={termOptions}
-          value={selectedTerm.map((term) => ({
-            value: term,
-            label:
-              termOptions?.find((option) => option.value === term)?.label || "",
-          }))}
-          isMulti
-          onChange={handleFilterByTerm}
-          isDisabled={selectedFilter && selectedFilter !== "term"}
-          placeholder="Choose top-level phenotype..."
-        />
-      </div>
-      <div className="col-md-4">
-        <label htmlFor="percentage-filter-input">
-          Filter top {selectedPercentage} % of the genes that have the highest
-          phenotype count
-        </label>
-        <div className="d-flex align-items-center">
-          <input
-            type="range"
-            id="percentage-filter-input"
-            className="form-range me-2 m-2"
-            min="1"
-            max="100"
-            step="1"
-            value={selectedPercentage}
-            onChange={handleFilterByPercentage}
-            disabled={selectedFilter && selectedFilter !== "percentage"}
+    <div className="filter-controls container">
+      <div className="row">
+        <div className="col-md-6 col-sm-12 mb-2">
+          <Select
+            id="gene-filter-input"
+            className="m-2 select-filter"
+            options={geneOptions}
+            value={selectedGene.map((gene) => ({
+              value: gene,
+              label:
+                geneOptions?.find((option) => option.value === gene)?.label ||
+                "",
+            }))}
+            onChange={handleFilterByGene}
+            isMulti
+            isDisabled={selectedFilter && selectedFilter !== "gene"}
+            placeholder="Choose a list of genes..."
           />
         </div>
-      </div>
-      <div className="col-md-4">
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={resetFilters}
-        >
-          Reset Filters
-        </button>
+        <div className="col-md-6 col-sm-12 mb-2">
+          <Select
+            id="term-filter-select"
+            className="m-2 select-filter"
+            options={termOptions}
+            value={selectedTerm.map((term) => ({
+              value: term,
+              label:
+                termOptions?.find((option) => option.value === term)?.label ||
+                "",
+            }))}
+            isMulti
+            onChange={handleFilterByTerm}
+            isDisabled={selectedFilter && selectedFilter !== "term"}
+            placeholder="Choose top-level phenotype..."
+          />
+        </div>
+        <div className="col-md-6 col-sm-12 mb-2">
+          <label htmlFor="percentage-filter-input">
+            Filter top {selectedPercentage} % of the genes that have the highest
+            phenotype count
+          </label>
+          <div className="d-flex align-items-center">
+            <input
+              type="range"
+              id="percentage-filter-input"
+              className="form-range me-2 m-2"
+              min="1"
+              max="100"
+              step="1"
+              value={selectedPercentage}
+              onChange={handleFilterByPercentage}
+              disabled={selectedFilter && selectedFilter !== "percentage"}
+            />
+          </div>
+        </div>
+        <div className="col-md-6 col-sm-12 mb-2 d-flex justify-content-end">
+          <button
+            type="button"
+            className="btn btn-secondary ms-2"
+            onClick={resetFilters}
+          >
+            Reset Filters
+          </button>
+        </div>
       </div>
     </div>
   );
