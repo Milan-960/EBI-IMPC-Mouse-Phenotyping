@@ -136,6 +136,11 @@ li {
   width: 100%;
 }
 
+.active-filter-label {
+  color: #ffffff;
+  background-color: #f0893ade;
+}
+
 /* tooltips */
 
 .tooltip-row {
