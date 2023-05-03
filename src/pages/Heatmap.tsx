@@ -1,95 +1,107 @@
-import React, { useEffect, useState } from "react";
-import { ResponsiveHeatMap } from "@nivo/heatmap";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ResponsiveHeatMapCanvas } from "@nivo/heatmap";
+
 import HeatmapPagination from "../components/HeatmapPagination";
-import { HeatMapDatum, HeatMapSerie } from "../types/custom-types";
+import { HeatmapGene, TransformedData } from "../types/custom-types";
 import { fetchData } from "../api/fetchData";
+import { transformData } from "../utils/transformData";
+import FilterControls from "../components/FilterControls";
+import useDebouncedFilters from "../hooks/useDebouncedFilters";
 
-const transformData = (data: any[]): HeatMapSerie[] => {
-  // This need to go to the custom types
-  const geneData: { [key: string]: HeatMapDatum[] } = {};
-  const maxPhenotypeCounts: { [key: string]: number } = {};
-
-  data.forEach((entry) => {
-    const geneSymbol = entry.marker_symbol;
-    const topLevelPhenotypeTerm =
-      entry.top_level_phenotype_term.top_level_mp_term_name;
-    const phenotypeCount = entry.phenotype_count;
-    const mgiIdentifier = entry.marker_accession_id;
-    const procedures = entry.procedures.join(", ");
-    const phenotypeTerms = entry.phenotype_terms
-      .map(
-        (term: { mp_term_name: any; mp_term_id: any }) =>
-          `${term.mp_term_name} (${term.mp_term_id})`
-      )
-      .join(", ");
-
-    if (!geneData[geneSymbol]) {
-      geneData[geneSymbol] = [];
-    }
-
-    geneData[geneSymbol].push({
-      x: topLevelPhenotypeTerm,
-      y: parseInt(geneSymbol),
-      value: phenotypeCount,
-      mgiIdentifier,
-      procedures,
-      phenotypeTerms,
-    });
-
-    if (
-      !maxPhenotypeCounts[geneSymbol] ||
-      phenotypeCount > maxPhenotypeCounts[geneSymbol]
-    ) {
-      maxPhenotypeCounts[geneSymbol] = phenotypeCount;
-    }
-  });
-
-  return Object.keys(geneData).map((geneSymbol) => ({
-    id: geneSymbol,
-    data: geneData[geneSymbol].sort((a, b) => b.value - a.value),
-    maxPhenotypeCount: maxPhenotypeCounts[geneSymbol],
-  }));
-};
-
-const HeatmapTest: React.FC = () => {
-  const [heatmapData, setHeatmapData] = useState<HeatMapSerie[]>([]);
-  console.log("heatmap data", heatmapData);
-  const [rawData, setRawData] = useState<any[]>([]);
+const Heatmap: React.FC = () => {
+  const [heatmapData, setHeatmapData] = useState<TransformedData | null>(null);
+  const [displayedHeatmapData, setDisplayedHeatmapData] =
+    useState<TransformedData | null>(null);
+  console.log("displayedHeatmapData", displayedHeatmapData);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedTerm, setSelectedTerm] = useState<string[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<
+    "gene" | "term" | "percentage"
+  >();
+  const [selectedGene, setSelectedGene] = useState<string[]>([]);
+  const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
+  const [isLoading, setIsLoading] = useState(true);
+  const genesPerPage = 30;
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [topPercentage, setTopPercentage] = useState(100);
-  const genesPerPage = 5;
+  // Apply filters
+  const applyFilters = useCallback(() => {
+    if (!heatmapData) return;
+
+    let filteredData: HeatmapGene[] = heatmapData.genes;
+
+    if (selectedFilter === "gene") {
+      filteredData = filteredData.filter((gene) =>
+        selectedGene.length === 0
+          ? true
+          : selectedGene.includes(gene.marker_accession_id)
+      );
+    }
+
+    if (selectedFilter === "term") {
+      filteredData = filteredData
+        .map((gene) => {
+          if (selectedTerm.length === 0) {
+            return gene;
+          }
+          return {
+            ...gene,
+            data: gene.data.filter((d) => selectedTerm.includes(d.tlp_term_id)),
+          };
+        })
+        .filter((gene) => gene.data.length > 0);
+    }
+
+    // Filter based on the top percentage of genes with the highest count of phenotype associations
+    if (selectedFilter === "percentage") {
+      const topN = Math.ceil(
+        (selectedPercentage / 100) * (heatmapData?.genes.length ?? 0)
+      );
+      filteredData = filteredData
+        .sort((a, b) => b.total_pTerm_count - a.total_pTerm_count)
+        .slice(0, topN);
+    }
+
+    setDisplayedHeatmapData({
+      ...heatmapData,
+      genes: filteredData,
+    });
+  }, [
+    heatmapData,
+    selectedGene,
+    selectedTerm,
+    selectedFilter,
+    selectedPercentage,
+  ]);
+
+  // Debounce the applyFilters function to avoid excessive updates
+  const debouncedApplyFilters = useDebouncedFilters(applyFilters, 1000);
 
   useEffect(() => {
+    debouncedApplyFilters();
+  }, [
+    selectedGene,
+    selectedTerm,
+    selectedFilter,
+    selectedPercentage,
+    debouncedApplyFilters,
+  ]);
+
+  useEffect(() => {
+    setIsLoading(true);
     fetchData().then((data) => {
-      setRawData(data);
+      setHeatmapData(transformData(data));
+      setIsLoading(false);
     });
   }, []);
 
-  useEffect(() => {
-    const filteredData = searchTerm
-      ? rawData.filter((item: any) =>
-          item.marker_symbol.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : rawData;
-    const topDataCount = Math.floor(
-      (topPercentage / 100) * filteredData.length
+  const totalPages = Math.ceil((heatmapData?.genes.length ?? 0) / genesPerPage);
+
+  const paginatedData = useMemo(() => {
+    return displayedHeatmapData?.genes.slice(
+      currentPage * genesPerPage,
+      currentPage * genesPerPage + genesPerPage
     );
-    const topData = filteredData
-      .sort((a: any, b: any) => b.phenotype_count - a.phenotype_count)
-      .slice(0, topDataCount);
-    const transformedData = transformData(topData);
-    setHeatmapData(transformedData);
-    setCurrentPage(0);
-  }, [searchTerm, topPercentage, rawData]);
-
-  const totalPages = Math.ceil(heatmapData.length / genesPerPage);
-
-  const paginatedData = heatmapData.slice(
-    currentPage * genesPerPage,
-    currentPage * genesPerPage + genesPerPage
-  );
+  }, [currentPage, displayedHeatmapData]);
 
   return (
     <div className="container">
@@ -100,37 +112,34 @@ const HeatmapTest: React.FC = () => {
           phenotyping systems.
         </p>
       </div>
-      <div>
-        <label htmlFor="search">Search by gene symbol or phenotype term:</label>
-        <input
-          id="search"
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="topPercentage">
-          Filter top {topPercentage} % of the genes that have the highest
-          phenotype count
-        </label>
-        <input
-          type="range"
-          id="percentage-filter-input"
-          className="form-range me-2 m-2"
-          min="1"
-          max="100"
-          step="1"
-          value={topPercentage}
-          onChange={(e) => setTopPercentage(parseInt(e.target.value, 10))}
-        />
-      </div>
+
+      <FilterControls
+        selectedTerm={selectedTerm}
+        setSelectedTerm={setSelectedTerm}
+        data={heatmapData}
+        selectedPercentage={selectedPercentage}
+        setSelectedPercentage={setSelectedPercentage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        onFiltersChanged={debouncedApplyFilters}
+        selectedGene={selectedGene}
+        setSelectedGene={setSelectedGene}
+        setSelectedFilter={setSelectedFilter}
+        selectedFilter={selectedFilter}
+      />
+
       <div className="heatmap-container">
-        {heatmapData.length > 0 ? (
-          <div style={{ height: "700px" }}>
-            <ResponsiveHeatMap
+        {isLoading && (
+          <div className="loading-overlay">
+            <p>Loading data...</p>
+          </div>
+        )}
+        {paginatedData && paginatedData.length > 0 ? (
+          <div className="heatmap-wrapper">
+            <ResponsiveHeatMapCanvas
+              key={paginatedData.length}
               data={paginatedData}
-              margin={{ top: 100, right: 90, bottom: 60, left: 90 }}
+              margin={{ top: 120, right: 90, bottom: 60, left: 90 }}
               valueFormat=">-.2s"
               xOuterPadding={0.1}
               xInnerPadding={0.1}
@@ -143,7 +152,7 @@ const HeatmapTest: React.FC = () => {
                 tickPadding: 5,
                 tickRotation: -28,
                 legend: "Top-Level Phenotype",
-                legendOffset: -95,
+                legendOffset: -110,
                 legendPosition: "middle",
               }}
               axisLeft={{
@@ -154,7 +163,6 @@ const HeatmapTest: React.FC = () => {
                 legendPosition: "middle",
                 legendOffset: -72,
               }}
-              cellComponent="rect"
               axisRight={{
                 tickSize: 5,
                 tickPadding: 5,
@@ -163,16 +171,39 @@ const HeatmapTest: React.FC = () => {
                 legendPosition: "middle",
                 legendOffset: 70,
               }}
-              labelTextColor={{ from: "color", modifiers: [["darker", 2]] }}
-              emptyColor="#555555"
-              borderColor={{ theme: "grid.line.stroke" }}
+              colors={{
+                type: "quantize",
+                steps: 4,
+                colors: ["#88dbd9", "#29bcd0", "#009fca", "#0076b6"],
+              }}
+              emptyColor="#0000"
+              enableLabels={true}
+              legends={[
+                {
+                  anchor: "bottom",
+                  translateX: 0,
+                  translateY: 30,
+                  length: 400,
+                  thickness: 8,
+                  direction: "row",
+                  tickPosition: "after",
+                  tickSize: 3,
+                  tickSpacing: 4,
+                  tickOverlap: false,
+                  tickFormat: ">-.2s",
+                  title: "Value →",
+                  titleAlign: "start",
+                  titleOffset: 4,
+                },
+              ]}
               annotations={[]}
             />
           </div>
         ) : (
-          <p>Loading data...</p>
+          <p>No data available!!</p>
         )}
       </div>
+
       <HeatmapPagination
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -182,4 +213,4 @@ const HeatmapTest: React.FC = () => {
   );
 };
 
-export default HeatmapTest;
+export default Heatmap;

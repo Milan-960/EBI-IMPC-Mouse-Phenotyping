@@ -1,11 +1,6 @@
 import React from "react";
 import { Pagination } from "react-bootstrap";
-
-type HeatmapPaginationProps = {
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  totalPages: number;
-};
+import { HeatmapPaginationProps } from "../types/custom-types";
 
 const HeatmapPagination: React.FC<HeatmapPaginationProps> = ({
   currentPage,
