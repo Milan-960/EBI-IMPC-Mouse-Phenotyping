@@ -27,7 +27,8 @@ const Heatmap: React.FC = () => {
   const applyFilters = useCallback(() => {
     if (!heatmapData) return;
 
-    let filteredData: HeatmapGene[] = heatmapData.genes;
+    // Create a shallow copy of the original data
+    let filteredData: HeatmapGene[] = [...heatmapData.genes];
 
     if (selectedFilter === "gene") {
       filteredData = filteredData.filter((gene) =>
@@ -89,12 +90,15 @@ const Heatmap: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
     fetchData().then((data) => {
-      setHeatmapData(transformData(data));
+      const transformedData = transformData(data);
+      setHeatmapData(transformedData);
       setIsLoading(false);
     });
   }, []);
 
-  const totalPages = Math.ceil((heatmapData?.genes.length ?? 0) / genesPerPage);
+  const totalPages = Math.ceil(
+    (displayedHeatmapData?.genes.length ?? 0) / genesPerPage
+  );
 
   const paginatedData = useMemo(() => {
     return displayedHeatmapData?.genes.slice(

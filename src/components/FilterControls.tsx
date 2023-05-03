@@ -14,6 +14,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   setSelectedFilter,
   data,
   onFiltersChanged,
+  setCurrentPage,
 }) => {
   // Handle gene filter input changes
   const handleFilterByGene = (
@@ -51,11 +52,12 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     onFiltersChanged();
   };
 
-  const resetFilters = () => {
+  const handleResetFilters = () => {
     setSelectedGene([]);
     setSelectedTerm([]);
     setSelectedPercentage(10);
     setSelectedFilter(undefined);
+    setCurrentPage(0);
     onFiltersChanged();
   };
 
@@ -81,6 +83,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     <div className="filter-controls container">
       <div className="row">
         <div className="col-md-6 col-sm-12 mb-2">
+          <label htmlFor="gene-filter-input">Filter by gene list:</label>
           <Select
             id="gene-filter-input"
             className="m-2 select-filter"
@@ -98,6 +101,9 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           />
         </div>
         <div className="col-md-6 col-sm-12 mb-2">
+          <label htmlFor="term-filter-select">
+            Filter by top-level phenotype term:
+          </label>
           <Select
             id="term-filter-select"
             className="m-2 select-filter"
@@ -137,7 +143,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           <button
             type="button"
             className="btn btn-secondary ms-2"
-            onClick={resetFilters}
+            onClick={handleResetFilters}
           >
             Reset Filters
           </button>
