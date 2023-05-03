@@ -57,7 +57,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   const handleResetFilters = () => {
     setSelectedGene([]);
     setSelectedTerm([]);
-    setSelectedPercentage(10);
+    setSelectedPercentage(0);
     setSelectedFilter(undefined);
     setCurrentPage(0);
     onFiltersChanged();
@@ -134,17 +134,17 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         </div>
         <div className="col-md-6 col-sm-12 mb-2">
           <label htmlFor="percentage-filter-input">
-            Filter top {selectedPercentage} % of the genes that have the highest
-            phenotype count {renderActiveLabel("percentage")}
+            Filter top 10% of the genes that have the highest phenotype count{" "}
+            {renderActiveLabel("percentage")}
           </label>
           <div className="d-flex align-items-center">
             <input
               type="range"
               id="percentage-filter-input"
               className="form-range me-2 m-2"
-              min="1"
+              min="0"
               max="100"
-              step="1"
+              step="5"
               value={selectedPercentage}
               onChange={handleFilterByPercentage}
               disabled={selectedFilter && selectedFilter !== "percentage"}
