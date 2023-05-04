@@ -176,6 +176,8 @@ By implementing some or all of these enhancements, the app can provide an even m
 
 ---
 
+## This task was implemented in 3 days about 2 to 4 hours some days in total It took me a day to finish the development!
+
 ## **Here are the links to the branches!**
 
 [Master](https://github.com/Milan-960/EBI-IMPC-Mouse-Phenotyping)
